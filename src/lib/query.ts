@@ -1,7 +1,7 @@
 import { IArxivArticle, IArxivError } from "~/models/arxiv";
 import { IQueryParam, queryParams } from "~/models/queryParam";
 
-const arxivApiUrl = "http://export.arxiv.org/api/query?";
+const arxivApiUrl = "https://export.arxiv.org/api/query?";
 const arxivNamespaces: Record<string, string> = {
   atom: "http://www.w3.org/2005/Atom",
   arxiv: "http://arxiv.org/schemas/atom",
