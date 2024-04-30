@@ -11,7 +11,7 @@ const NOT_FOUND = "not found";
 
 const namespaceResolver = (prefix: string | null) => {
   if (!prefix) return null;
-  return arxivNamespaces[prefix] || null;
+  return arxivNamespaces[prefix] ?? null;
 };
 
 const getNodeTextContent = <DefaultType>(
@@ -23,7 +23,7 @@ const getNodeTextContent = <DefaultType>(
   const textContent = xml
     .evaluate(xpath, context, namespaceResolver)
     .iterateNext()?.textContent;
-  return textContent || defaultValue;
+  return textContent ?? defaultValue;
 };
 
 const getNodeAttribute = <DefaultType>(
@@ -36,7 +36,7 @@ const getNodeAttribute = <DefaultType>(
   const element = xml
     .evaluate(xpath, context, namespaceResolver)
     .iterateNext() as Element;
-  return element?.getAttribute(attribute) || defaultValue;
+  return element?.getAttribute(attribute) ?? defaultValue;
 };
 
 const getNodes = (xpath: string, xml: Document, context: Node) => {
@@ -75,7 +75,7 @@ const parseEntry = (entry: Node, xml: Document): IArxivArticle => {
       ),
     })),
     categories: getNodes(".//atom:category", xml, entry).map(
-      (node) => (node as Element).getAttribute("term") || NOT_FOUND,
+      (node) => node.getAttribute("term") ?? NOT_FOUND,
     ),
     abstractLink: getNodeAttribute(
       ".//atom:link[@rel='alternate']",
@@ -126,8 +126,8 @@ const parseError = (entry: Node, xml: Document): IArxivError => {
 
 export const queryArxiv = async (
   params: IQueryParam[],
-  start: number = 0,
-  maxResults: number = 20,
+  start = 0,
+  maxResults = 20,
 ) => {
   const queryParamString = params
     .map(
@@ -141,7 +141,7 @@ export const queryArxiv = async (
       ["search_query", queryParamString],
       ["start", `${start}`],
       ["max_results", `${maxResults}`],
-    ]);
+    ]).toString();
 
   console.log(requestUrl);
 

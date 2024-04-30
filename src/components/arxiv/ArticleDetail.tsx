@@ -20,7 +20,7 @@ export const ArticleDetail: React.FC<IArticleElementProp> = ({ article }) => {
       <Title order={2}>{article.title}</Title>
       <Group>
         {article.authors.map((author) => (
-          <Tooltip label={author.affiliation || author.name}>
+          <Tooltip key={author.name} label={author.affiliation ?? author.name}>
             <Badge>{author.name}</Badge>
           </Tooltip>
         ))}

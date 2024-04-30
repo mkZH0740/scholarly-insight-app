@@ -33,7 +33,7 @@ export const Home: React.FC = () => {
       return;
     }
 
-    utils.post.createBrowseHistory.fetch({
+    return utils.post.createBrowseHistory.fetch({
       url: article.abstractLink,
       title: article.title,
     });
@@ -44,7 +44,7 @@ export const Home: React.FC = () => {
       return;
     }
 
-    utils.post.createBookmark.fetch({
+    return utils.post.createBookmark.fetch({
       url: article.abstractLink,
       title: article.title,
     });
