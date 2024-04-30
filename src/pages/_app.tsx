@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
+import "@mantine/core/styles.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,7 +19,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <main className={`font-sans ${inter.variable}`}>
+      <main className={`font-sans ${inter.variable} h-full w-full`}>
         <Component {...pageProps} />
       </main>
     </SessionProvider>

@@ -14,16 +14,83 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+// scholarly insight models
+model BrowseHistory {
+    id            Int      @id @default(autoincrement())
+    url           String
+    title         String
+    browsedAt     DateTime @default(now())
+    browsedByUser String
+    browsedBy     User     @relation(fields: [browsedByUser], references: [id])
+}
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
+model QueryParam {
+    id             Int          @id @default(autoincrement())
+    key            String
+    value          String
+    order          Int
+    operator       String?
+    belongsToQuery Int
+    belongsTo      QueryHistory @relation(fields: [belongsToQuery], references: [id])
+}
 
-    @@index([name])
+model QueryHistory {
+    id            Int          @id @default(autoincrement())
+    maxResults    Int
+    start         Int
+    queriedAt     DateTime     @default(now())
+    queryParams   QueryParam[]
+    queriedByUser String
+    queriedBy     User         @relation(fields: [queriedByUser], references: [id])
+}
+
+model Bookmark {
+    id               Int      @id @default(autoincrement())
+    url              String
+    title            String
+    bookmarkedAt     DateTime @default(now())
+    bookmarkedByUser String
+    bookmarkedBy     User     @relation(fields: [bookmarkedByUser], references: [id])
+}
+
+model Field {
+    id           Int    @id @default(autoincrement())
+    name         String
+    displayName  String
+    subscribedBy User[]
+}
+
+model Tag {
+    id                 Int       @id @default(autoincrement())
+    displayName        String
+    attachedToChannels Channel[]
+}
+
+model Channel {
+    id            Int       @id @default(autoincrement())
+    name          String
+    createdAt     DateTime  @default(now())
+    createdByUser String
+    createdBy     User      @relation("CreatorRelationship", fields: [createdByUser], references: [id])
+    ownedByUser   String
+    ownedBy       User      @relation("OwnerRelationship", fields: [ownedByUser], references: [id])
+    members       User[]    @relation("MemberRelationship")
+    tags          Tag[]
+    messages      Message[]
+}
+
+model Message {
+    id            Int       @id @default(autoincrement())
+    content       String
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+    replyToId     Int?
+    replyTo       Message?  @relation("MessageReplyRelationship", fields: [replyToId], references: [id])
+    repliedBy     Message[] @relation("MessageReplyRelationship")
+    sentByUser    String
+    sentBy        User      @relation(fields: [sentByUser], references: [id])
+    sentToChannel Int
+    sentTo        Channel   @relation(fields: [sentToChannel], references: [id])
 }
 
 // Necessary for Next auth
@@ -54,14 +121,21 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+    id                 String          @id @default(cuid())
+    name               String?
+    email              String?         @unique
+    emailVerified      DateTime?
+    image              String?
+    accounts           Account[]
+    sessions           Session[]
+    queryHistories     QueryHistory[]
+    browseHistories    BrowseHistory[]
+    bookmarks          Bookmark[]
+    fieldSubscriptions Field[]
+    createdChannels    Channel[]       @relation("CreatorRelationship")
+    ownedChannels      Channel[]       @relation("OwnerRelationship")
+    joinedChannels     Channel[]       @relation("MemberRelationship")
+    sentMessages       Message[]
 }
 
 model VerificationToken {
